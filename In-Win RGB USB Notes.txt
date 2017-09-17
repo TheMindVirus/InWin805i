@@ -1,0 +1,33 @@
+USB Device: HID-compliant consumer control device
+VID: FF01
+PID: 0206
+Bus Reported Device Description: CF05RGB
+USB Command: Interrupt Out
+Sample Leftover Data: 02:04:ff:00:00:00:00:00 (02 = R, 04 = G, ff = B !!! What do the others do?)
+Task: Use WinUSB in Visual Studio to develop an application to control the RGB LED's
+
+Wireshark Data:
+
+No.     Time           Source                Destination           Protocol Length Info
+  39729 588.874567     host                  2.16.2                USB      35     URB_INTERRUPT out
+
+Frame 39729: 35 bytes on wire (280 bits), 35 bytes captured (280 bits) on interface 0
+USB URB
+    [Source: host]
+    [Destination: 2.16.2]
+    USBPcap pseudoheader length: 27
+    IRP ID: 0xffff9e0b2212f820
+    IRP USBD_STATUS: USBD_STATUS_SUCCESS (0x00000000)
+    URB Function: URB_FUNCTION_BULK_OR_INTERRUPT_TRANSFER (0x0009)
+    IRP information: 0x00, Direction: FDO -> PDO
+        0000 000. = Reserved: 0x00
+        .... ...0 = Direction: FDO -> PDO (0x0)
+    URB bus id: 2
+    Device address: 16
+    Endpoint: 0x02, Direction: OUT
+        0... .... = Direction: OUT (0)
+        .... 0010 = Endpoint number: 2
+    URB transfer type: URB_INTERRUPT (0x01)
+    Packet Data Length: 8
+    [bInterfaceClass: Unknown (0xffff)]
+Leftover Capture Data: 0204ff0000000000
