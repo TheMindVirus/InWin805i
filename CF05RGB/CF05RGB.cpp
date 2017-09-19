@@ -31,13 +31,13 @@ namespace CF05RGB
 	__declspec(dllexport) int Blue = 0;
 	__declspec(dllexport) int Brightness = 255;
 	__declspec(dllexport) int Update();
+	__declspec(dllexport) bool Setup();
+	__declspec(dllexport) bool Cleanup();
 }
 
 #pragma data_seg()
 
 //Forward Declarations
-BOOL Setup();
-BOOL Cleanup();
 HRESULT GetDevice(_Out_ LPHANDLE DeviceHandle);
 
 //GetDevicePath() Error Codes
@@ -88,15 +88,15 @@ BOOL WINAPI DllMain(HINSTANCE hDllInstance, DWORD fdwReason, LPVOID lpvReserved)
 	switch (fdwReason)
 	{
 		default: return FALSE; break;
-		case(DLL_PROCESS_ATTACH): return Setup(); break;
-		case(DLL_THREAD_ATTACH): return Setup(); break;
-		case(DLL_PROCESS_DETACH): return Cleanup(); break;
-		case(DLL_THREAD_DETACH): return Cleanup(); break;
+		case(DLL_PROCESS_ATTACH): return CF05RGB::Setup(); break;
+		case(DLL_THREAD_ATTACH): return CF05RGB::Setup(); break;
+		case(DLL_PROCESS_DETACH): return CF05RGB::Cleanup(); break;
+		case(DLL_THREAD_DETACH): return CF05RGB::Cleanup(); break;
 	}
 }
 
 //Initialises the library
-BOOL Setup()
+bool CF05RGB::Setup()
 {
 	Cleanup();
 	overlapped.Offset = 0xFFFFFFFF;
@@ -113,7 +113,7 @@ BOOL Setup()
 }
 
 //De-initialises the library
-BOOL Cleanup()
+bool CF05RGB::Cleanup()
 {
 	if (Device != INVALID_HANDLE_VALUE)
 	{
@@ -121,6 +121,33 @@ BOOL Cleanup()
 		Device = INVALID_HANDLE_VALUE;
 	}
 	return TRUE;
+}
+
+//Sends a USB Interrupt Transfer to update the LEDs on the 805i
+int CF05RGB::Update()
+{
+	if (Device == INVALID_HANDLE_VALUE)
+		return E_UPDATE_BAD_DEVICE_HANDLE;
+
+	DWORD nBytes = 0;
+	BYTE buffer[9] =
+	{
+		0, //ReportID
+		BYTE(Red * Brightness / 255),
+		BYTE(Green * Brightness / 255),
+		BYTE(Blue * Brightness / 255),
+		0, 0, 0, 0, 0 //Trailing Report Data
+	};
+
+	BOOL bRetval = WriteFile(Device, buffer, 9, NULL, &overlapped);
+	if ((!bRetval) && (GetLastError() != ERROR_IO_PENDING))
+		return E_UPDATE_WRITE_FILE;
+
+	bRetval = GetOverlappedResult(Device, &overlapped, &nBytes, TRUE);
+	if (!bRetval)
+		return E_UPDATE_GET_OVERLAPPED;
+
+	return nBytes;
 }
 
 //Gets a Handle to the HID Device used for this application
@@ -230,31 +257,4 @@ HRESULT GetDevice(_Out_ LPHANDLE DeviceHandle)
 	LocalFree(pspDevDetails);
 	SetupDiDestroyDeviceInfoList(hDevInfo);
 	return S_OK;
-}
-
-//Sends a USB Interrupt Transfer to update the LEDs on the 805i
-int CF05RGB::Update()
-{
-	if (Device == INVALID_HANDLE_VALUE)
-		return E_UPDATE_BAD_DEVICE_HANDLE;
-
-	DWORD nBytes = 0;
-	BYTE buffer[9] =
-	{ 
-		0, //ReportID
-		BYTE(Red * Brightness / 255),
-		BYTE(Green * Brightness / 255),
-		BYTE(Blue * Brightness / 255),
-		0, 0, 0, 0, 0 //Trailing Report Data
-	};
-
-	BOOL bRetval = WriteFile(Device, buffer, 9, NULL, &overlapped);
-	if ((!bRetval) && (GetLastError() != ERROR_IO_PENDING))
-		return E_UPDATE_WRITE_FILE;
-
-	bRetval = GetOverlappedResult(Device, &overlapped, &nBytes, TRUE);
-	if (!bRetval)
-		return E_UPDATE_GET_OVERLAPPED;
-
-	return nBytes;
 }

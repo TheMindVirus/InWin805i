@@ -3,12 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CF05RGB", "CF05RGB\CF05RGB.vcxproj", "{3B4E2E5B-E011-49D7-90FB-0DFAD0772F1A}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CF05RGB_test", "CF05RGB_test\CF05RGB_test.vcxproj", "{4806215B-6400-461D-9354-B5A873D1CBB2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3B4E2E5B-E011-49D7-90FB-0DFAD0772F1A} = {3B4E2E5B-E011-49D7-90FB-0DFAD0772F1A}
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CF05RGB", "CF05RGB\CF05RGB.vcxproj", "{3B4E2E5B-E011-49D7-90FB-0DFAD0772F1A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -10,5 +10,8 @@ namespace CF05RGB
 	__declspec(dllimport) int Green;
 	__declspec(dllimport) int Blue;
 	__declspec(dllimport) int Brightness;
+
+	__declspec(dllexport) bool Setup(); //These should only be called
+	__declspec(dllexport) bool Cleanup(); //if Update() returns <= 0
 	__declspec(dllimport) int Update();
 }
